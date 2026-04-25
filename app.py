@@ -25,7 +25,7 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
-st.title(f" Kr AI ({app_mode})")
+st.title(f" Kr AI Pro")
 
 # Mesajları Ekranda Göster (Sadece Normal Modda)
 if app_mode == "Normal Sohbet":
