@@ -2,9 +2,10 @@ import streamlit as st
 from groq import Groq
 from streamlit_mic_recorder import speech_to_text
 
-# Groq Beyin Bağlantısı
-client = Groq(api_key="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")
+# Anahtarı Streamlit Secrets'tan çekiyoruz (Daha güvenli ve hatasız)
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
+# ... (Kodun geri kalanı aynı kalacak)
 st.set_page_config(page_title="Kr AI Pro", layout="centered")
 st.title("👑 Kr AI ")
 
