@@ -14,7 +14,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 st.title("👑 Kr AI Pro")
-st.caption("7/24 Aktif | Llama 3.1 Bulut Sürümü")
+st.caption("Kr AI Pro | Web Sürümü")
 
 # Eski mesajları ekranda göster
 for message in st.session_state.messages:
@@ -24,6 +24,7 @@ for message in st.session_state.messages:
 # --- 3. GİRİŞ ALANI (SES VE YAZI) ---
 col1, col2 = st.columns([1, 5])
 with col1:
+    # Buradaki mikrofon sadece senin sesini yazıya çevirmek için kalıyor
     voice_input = speech_to_text(language='tr', start_prompt="🎙️", stop_prompt="🛑", key='stt')
 with col2:
     text_input = st.chat_input("Bir şeyler yazın...")
@@ -35,7 +36,7 @@ if voice_input and voice_input.strip():
 elif text_input and text_input.strip():
     user_query = text_input
 
-# --- 4. YANIT VE SESLENDİRME ---
+# --- 4. YANIT ÜRETME ---
 if user_query:
     # Kullanıcı mesajını kaydet ve göster
     st.session_state.messages.append({"role": "user", "content": user_query})
@@ -45,7 +46,7 @@ if user_query:
     # Yapay zekadan yanıt al
     with st.chat_message("assistant"):
         try:
-            # Boş mesaj gitmemesi için filtreleme yapıyoruz
+            # Sadece dolu mesajları filtrele
             messages_to_send = [{"role": "system", "content": "Sen Kr AI'sın. Samimi, zeki ve kısa Türkçe cevaplar ver."}]
             for m in st.session_state.messages:
                 if m["content"].strip():
@@ -61,19 +62,6 @@ if user_query:
             response_text = completion.choices[0].message.content
             st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
-            
-            # TARAYICI SESİ (JavaScript)
-            # Sitenin açıldığı cihazın (telefon/PC) hoparlörünü kullanır
-            js_code = f"""
-                <script>
-                window.speechSynthesis.cancel(); // Önceki sesi durdur
-                var msg = new SpeechSynthesisUtterance('{response_text.replace("'", "").replace('"', '')}');
-                msg.lang = 'tr-TR';
-                msg.rate = 1.1; // Biraz daha hızlı ve doğal konuşma
-                window.speechSynthesis.speak(msg);
-                </script>
-            """
-            st.components.v1.html(js_code, height=0)
 
         except Exception as e:
             st.error(f"Bir hata oluştu: {e}")
