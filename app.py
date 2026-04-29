@@ -3,7 +3,7 @@ from groq import Groq
 from streamlit_mic_recorder import speech_to_text
 
 # --- 1. AYARLAR ---
-GROQ_API_KEY = "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" 
+GROQ_API_KEY = "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" 
 client = Groq(api_key=GROQ_API_KEY)
 
 st.set_page_config(page_title="Kr AI Pro", page_icon="", layout="centered")
