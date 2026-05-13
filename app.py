@@ -11,7 +11,7 @@ st.set_page_config(page_title="Kr AI Pro v3.1", layout="wide")
 # --- 2. YAN MENÜ (PROFESYONEL KONTROL) ---
 with st.sidebar:
     st.title("Kr AI Kontrol")
-    st.info("V3.1")
+    st.info("https://kr-ai-web-akorqhmehdvkmjtusiq7ne.streamlit.app/")
     
     st.divider()
     
