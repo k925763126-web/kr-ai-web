@@ -3,7 +3,7 @@ from groq import Groq
 from streamlit_mic_recorder import speech_to_text
 
 # --- 1. AYARLAR ---
-GROQ_API_KEY = "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" 
+GROQ_API_KEY = "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" 
 client = Groq(api_key=GROQ_API_KEY)
 
 st.set_page_config(page_title="Kr AI Pro", page_icon="", layout="centered")
@@ -34,7 +34,7 @@ if app_mode == "Normal Sohbet":
             st.markdown(message["content"])
 
 # --- 3. GİRİŞ ALANI ---
-text_input = st.chat_input("Mesajınızı veya Resim Hayalinizi Yazın...")
+text_input = st.chat_input("Dilediğini Yaz...")
 
 # --- 4. İŞLEME MANTIĞI ---
 if text_input:
@@ -47,7 +47,7 @@ if text_input:
 
         with st.chat_message("assistant"):
             try:
-                messages_to_send = [{"role": "system", "content": "Sen Kr AI'sın. Samimi ve kısa cevap ver."}]
+                messages_to_send = [{"role": "system", "content": "Sen Kr AI'sın. Samimi cevap ver."}]
                 for m in st.session_state.messages:
                     if m["content"].strip():
                         messages_to_send.append(m)
