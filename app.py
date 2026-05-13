@@ -84,6 +84,6 @@ else:
                 image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
                 
                 st.image(image_url, use_column_width=True, caption="Kr AI tarafından üretildi")
-                st.success("İşte başyapıtın!")
+                st.success("İşte Görselin!")
         else:
             st.warning("Lütfen bir açıklama yazın.")
