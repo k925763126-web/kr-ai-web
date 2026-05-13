@@ -1,80 +1,89 @@
 import streamlit as st
 from groq import Groq
-from streamlit_mic_recorder import speech_to_text
 
-# --- 1. AYARLAR ---
-GROQ_API_KEY = "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" 
+# --- 1. AYARLAR VE GÜVENLİK ---
+# API Key'ini buraya yaz veya Streamlit Secrets kullan
+GROQ_API_KEY = "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"
 client = Groq(api_key=GROQ_API_KEY)
 
-st.set_page_config(page_title="Kr AI Pro", page_icon="", layout="centered")
+st.set_page_config(page_title="Kr AI Pro v3.1", layout="wide")
 
-# --- 2. HAFIZA VE MOD SİSTEMİ ---
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Yan Menü (Sidebar)
+# --- 2. YAN MENÜ (PROFESYONEL KONTROL) ---
 with st.sidebar:
-    st.title("⚙️ Ayarlar")
-    # Mod Seçimi
-    app_mode = st.radio("Bir Mod Seçin:", ["Normal Sohbet", "Resim Oluşturucu"])
+    st.title("Kr AI Kontrol")
+    st.info("V3.1")
     
     st.divider()
     
-    # Sohbeti Temizle Butonu
-    if st.button("🗑️ Sohbeti Temizle"):
+    # MOD SEÇİMİ
+    app_mode = st.selectbox("🎯 İşlem Modu", ["Sohbet Modu", "Sanat Galerisi (Resim)"])
+    
+    # VERSİYON SEÇİMİ
+    if app_mode == "Sohbet Modu":
+        model_version = st.radio("🧠 Zeka Versiyonu", 
+                                ["Llama 3.1 (Hızlı)", "Llama 3.3 (En Zeki)"])
+        model_id = "llama-3.1-8b-instant" if "3.1" in model_version else "llama-3.3-70b-versatile"
+    
+    st.divider()
+    
+    # TEMİZLİK
+    if st.button("🗑️ Geçmişi Sıfırla", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
 
-st.title(f" Kr AI Pro")
+# --- 3. HAFIZA SİSTEMİ ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-# Mesajları Ekranda Göster (Sadece Normal Modda)
-if app_mode == "Normal Sohbet":
+# --- 4. ANA EKRAN ---
+st.title("Kr AI Pro")
+
+if app_mode == "Sohbet Modu":
+    # Sohbet Geçmişi
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-# --- 3. GİRİŞ ALANI ---
-text_input = st.chat_input("Dilediğini Yaz...")
-
-# --- 4. İŞLEME MANTIĞI ---
-if text_input:
-    
-    # --- MOD 1: NORMAL SOHBET ---
-    if app_mode == "Normal Sohbet":
-        st.session_state.messages.append({"role": "user", "content": text_input})
+    # Yazı Girişi
+    if prompt := st.chat_input("Kr AI'ya bir soru sor..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
-            st.markdown(text_input)
+            st.markdown(prompt)
 
         with st.chat_message("assistant"):
             try:
-                messages_to_send = [{"role": "system", "content": "Sen Kr AI'sın. Samimi cevap ver."}]
-                for m in st.session_state.messages:
-                    if m["content"].strip():
-                        messages_to_send.append(m)
-
                 completion = client.chat.completions.create(
-                    messages=messages_to_send,
-                    model="llama-3.1-8b-instant",
+                    messages=[{"role": "system", "content": "Sen Kr AI Pro'sun. Çok zeki ve karizmatiksin."}] + st.session_state.messages,
+                    model=model_id,
                 )
-                
-                response_text = completion.choices[0].message.content
-                st.markdown(response_text)
-                st.session_state.messages.append({"role": "assistant", "content": response_text})
-
+                response = completion.choices[0].message.content
+                st.markdown(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
             except Exception as e:
-                st.error(f"Hata: {e}")
+                st.error(f"Sistem Hatası: {e}")
 
-    # --- MOD 2: RESİM OLUŞTURUCU ---
-    elif app_mode == "Resim Oluşturucu":
-        with st.chat_message("user"):
-            st.markdown(f"🖼️ Şunun resmini yap: {text_input}")
-        
-        with st.chat_message("assistant"):
-            with st.spinner("Resminiz çiziliyor..."):
-                # Ücretsiz resim oluşturma servisi (Pollinations)
-                # Yazılan metni URL'ye uygun hale getiriyoruz
-                prompt_url = text_input.replace(" ", "%20")
-                image_url = f"https://image.pollinations.ai/prompt/{prompt_url}?width=1024&height=1024&nologo=true"
+else:
+    # RESİM MODU
+    st.subheader("🎨 Hayalindekini Gerçeğe Dönüştür")
+    img_prompt = st.text_area("Resim açıklamasını yaz (Örn: Geleceğin İstanbulu, siberpunk stil):")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        quality = st.select_slider("Görsel Kalitesi", options=["Normal", "HD", "Ultra HD"])
+    with col2:
+        aspect_ratio = st.selectbox("Görünüm Oranı", ["1:1 (Kare)", "16:9 (Geniş)", "9:16 (Dikey)"])
+
+    if st.button("✨ Sanatı Oluştur", use_container_width=True):
+        if img_prompt:
+            with st.spinner("Kr AI çiziyor..."):
+                # Gelişmiş prompt düzenleyici (kaliteyi artırmak için otomatik eklemeler yapar)
+                final_prompt = f"{img_prompt}, high quality, 8k, detailed, masterpiece"
+                encoded_prompt = final_prompt.replace(" ", "%20")
                 
-                st.image(image_url, caption=f"Kr AI Tasarımı: {text_input}")
-                st.success("Resim Oluşturuldu!")
+                # Resim URL Oluşturma
+                image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
+                
+                st.image(image_url, use_column_width=True, caption="Kr AI tarafından üretildi")
+                st.success("İşte başyapıtın!")
+        else:
+            st.warning("Lütfen bir açıklama yazın.")
