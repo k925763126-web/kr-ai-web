@@ -21,7 +21,7 @@ with st.sidebar:
     # VERSİYON SEÇİMİ
     if app_mode == "Sohbet Modu":
         model_version = st.radio("🧠 Zeka Versiyonu", 
-                                ["Kr AI Beta )", "Kr AI v3.3"])
+                                ["Kr AI Beta ", "Kr AI v3.3"])
         model_id = "llama-3.1-8b-instant" if "3.1" in model_version else "llama-3.3-70b-versatile"
     
     st.divider()
