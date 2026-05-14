@@ -60,7 +60,7 @@ with tab1:
         with st.chat_message("assistant"):
             try:
                 # Güçlendirilmiş System Prompt
-                system_msg = "Sen Kr AI Platinum'sun. Kullanıcıya en derin analizleri sunan, karizmatik ve otoriter bir yapay zekasın."
+                system_msg = " Kr AI Platinum. Kullanıcıya en derin analizleri sunan, karizmatik ve otoriter bir yapay zekasın."
                 full_messages = [{"role": "system", "content": system_msg}] + st.session_state.messages
                 
                 completion = client.chat.completions.create(messages=full_messages, model=model_id)
