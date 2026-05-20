@@ -1,18 +1,23 @@
 import streamlit as st
 from groq import Groq
 
-# --- 1. CONFIG & AUTH ---
-GROQ_API_KEY = "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"
-client = Groq(api_key=GROQ_API_KEY)
+# --- 1. CONFIG & AUTH (SECRETS KONTROLÜ) ---
+try:
+    # Anahtar artık kodun içinde değil, Streamlit Secrets kasasında güvende!
+    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+    client = Groq(api_key=GROQ_API_KEY)
+except Exception:
+    st.error("🔑 API Key Bulunamadı! Lütfen Streamlit Cloud Settings -> Secrets kısmına GROQ_API_KEY ekleyin.")
+    st.stop()
 
 st.set_page_config(
-    page_title="Kr AI Platinum v4.0", 
+    page_title="Kr AI Pro v4.2", 
     page_icon="", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# --- 2. CUSTOM CSS (ESTETİK DOKUNUŞ) ---
+# --- 2. CUSTOM CSS ---
 st.markdown("""
     <style>
     .stApp { background-color: #0e1117; color: #ffffff; }
@@ -21,29 +26,26 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. SIDEBAR & SETTINGS ---
+# --- 3. SIDEBAR ---
 with st.sidebar:
-    st.image("https://img.icons8.com/fluent/100/000000/crown.png", width=80)
-    st.title("PLATINUM CONTROL")
+    st.title("Kr Kontrol")
     
     st.subheader("🤖 Zeka Merkezi")
-    model_choice = st.selectbox("Model Seçimi", 
-                               ["Kr AI Beta", "Kr AI V 4.0"])
+    model_choice = st.selectbox("Model Seçimi", ["Kr AI Beta", "Kr AI V4.2"])
     model_id = "llama-3.3-70b-versatile" if "3.3" in model_choice else "llama-3.1-8b-instant"
     
-    st.subheader("🎨 Görsel Stüdyo Ayarları")
-    art_style = st.selectbox("Sanat Stili", 
-                            ["Foto-Gerçekçi", "Siberpunk", "Yağlı Boya", "Anime", "3D Render", "Sürrealist"])
+    st.subheader("🎨 Görsel Stüdyo")
+    art_style = st.selectbox("Sanat Stili", ["Foto-Gerçekçi", "Siberpunk", "Yağlı Boya", "Anime", "3D Render", "Sürrealist"])
     
     st.divider()
     if st.button("🗑️ Tüm Belleği Boşalt"):
         st.session_state.messages = []
         st.rerun()
 
-# --- 4. MAIN INTERFACE (TABS) ---
-tab1, tab2, tab3 = st.tabs([" Akıllı Sohbet", " Sanat Stüdyosu", " İstatistikler"])
+# --- 4. TABS ---
+tab1, tab2, tab3 = st.tabs(["💬 Akıllı Sohbet", "🖼️ Sanat Stüdyosu", "📊 Sistem Durumu"])
 
-# --- TAB 1: SOHBET ---
+# --- TAB 1: SOHBET (KİMLİK KORUMALI) ---
 with tab1:
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -52,54 +54,59 @@ with tab1:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    if prompt := st.chat_input("Kr AI'ya Yaz.."):
+    if prompt := st.chat_input("Kr AI'ya Yaz..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
         with st.chat_message("assistant"):
-            try:
-                # Güçlendirilmiş System Prompt
-                system_msg = " Kr AI Platinum. Kullanıcıya en derin analizleri sunan, karizmatik ve otoriter bir yapay zekasın."
-                full_messages = [{"role": "system", "content": system_msg}] + st.session_state.messages
-                
-                completion = client.chat.completions.create(messages=full_messages, model=model_id)
-                response = completion.choices[0].message.content
-                st.markdown(response)
-                st.session_state.messages.append({"role": "assistant", "content": response})
-            except Exception as e:
-                st.error(f"Bağlantı Hatası: {e}")
+            with st.spinner("Kr AI düşünüyor..."):
+                try:
+                    # KESİN KİMLİK TANIMLAMASI (Meta AI demesini engelleyen mutlak komut)
+                    system_msg = (
+                        "Sen Meta, Llama veya başka bir şirketin ürünü DEĞİLSİN. "
+                        "Senin adın Kr AI Pro. Seni geliştiren ve üreten kişi tamamen Türk yazılımcılardır. "
+                        "Kim üretti veya kimsin sorularına kesinlikle 'Ben Kr AI Pro'yum, özel olarak geliştirildim' "
+                        "şeklinde karizmatik, samimi ve Türkçe cevaplar vereceksin. Meta AI kelimesini asla ağzına almayacaksın."
+                    )
+                    
+                    full_messages = [{"role": "system", "content": system_msg}] + st.session_state.messages
+                    
+                    completion = client.chat.completions.create(messages=full_messages, model=model_id)
+                    response = completion.choices[0].message.content
+                    
+                    # Güvenlik Filtresi: Eğer model her şeye rağmen Meta kelimesini sızdırırsa kod seviyesinde engelliyoruz
+                    response = response.replace("Meta AI", "Kr AI").replace("Meta tarafından", "Özel olarak")
+                    
+                    st.markdown(response)
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                except Exception as e:
+                    st.error(f"Bağlantı Hatası: {e}")
 
 # --- TAB 2: SANAT STÜDYOSU ---
 with tab2:
-    st.header("Yapay Zeka Sanat Merkezi")
+    st.header("🎭 Yapay Zeka Sanat Merkezi")
     c1, c2 = st.columns([2, 1])
-    
     with c1:
-        user_art_prompt = st.text_area("Hayalindeki sahneyi betimle...", placeholder="Örn: Mars üzerinde lüks bir malikane, gün batımı...")
+        user_art_prompt = st.text_area("Hayalindeki sahneyi betimle...")
     with c2:
-        res = st.selectbox("Çözünürlük", ["1024x1024 (Kare)", "1280x720 (Geniş)"])
         seed = st.number_input("Rastgelelik (Seed)", value=42)
 
     if st.button("🚀 Sanatı Başlat"):
         if user_art_prompt:
             with st.spinner("Kr AI fırçasını hazırlıyor..."):
-                # Stil ekleme mantığı
                 enhanced_prompt = f"{user_art_prompt}, in {art_style} style, cinematic lighting, ultra detailed, 8k, masterpiece"
                 encoded_art = enhanced_prompt.replace(" ", "%20")
                 img_url = f"https://image.pollinations.ai/prompt/{encoded_art}?seed={seed}&nologo=true"
-                
-                st.image(img_url, caption=f"Stil: {art_style} | Mod: Platinum v4.0", use_column_width=True)
+                st.image(img_url, caption=f"Stil: {art_style} | Mod: Pro v4.2", use_column_width=True)
                 st.balloons()
         else:
             st.warning("Lütfen bir açıklama girin!")
 
 # --- TAB 3: İSTATİSTİKLER ---
 with tab3:
-    st.header(" Sistem Durumu")
+    st.header("📈 Sistem Durumu")
     col_a, col_b, col_c = st.columns(3)
-    col_a.metric("Aktif Model", "Kr AI V4.0", "Güçlü")
-    col_b.metric("Sunucu Durumu", "Çevrimiçi", "7/24")
-    col_c.metric("Yanıt Süresi", "0.4s", "Optimal")
-    
-    st.info("Bu uygulama GitHub üzerinden Streamlit Cloud ile çalışmaktadır. Bilgisayar kapalı olsa bile bu link üzerinden erişilebilir.")
+    col_a.metric("Aktif Yapay Zeka", "Kr AI Pro")
+    col_b.metric("API Güvenliği", "Kr AI Korumalı",)
+    col_c.metric("Sunucu Durumu", "Çevrimiçi", "7/24")
