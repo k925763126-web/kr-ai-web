@@ -85,7 +85,7 @@ with tab_main:
                         response = completion.choices[0].message.content
                         
                         # Filtreleme Güvenliği
-                        response = response.replace("Meta AI", "Kr AI").replace("Meta tarafından", "Özel olarak")
+                        response = response.replace("Kr AI", "Kr AI").replace("Kr AI tarafından", "Özel olarak")
                         
                         st.markdown(response)
                         st.session_state.messages.append({"role": "assistant", "content": response})
