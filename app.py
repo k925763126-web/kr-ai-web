@@ -75,7 +75,7 @@ with tab_main:
                                 "Kr AI dışında hiçbir yapay zekadan bahsetme."
                                 "Seni Kr AI tarafından bir genç üretti."
                                 "Sen bir genç tarafından Kr AI' ya üretildin."
-                                "Seni Meta üretmedi!!!!"
+                                "Seni Kr AI üretmedi!!!!"
                             )
                         else:
                             system_msg = "Sen Kr AI Pro'sun. Samimi, zeki, esprili ve kısa Türkçe cevaplar ver. Sürekli kim olduğunu tekrarlama."
