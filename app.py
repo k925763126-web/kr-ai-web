@@ -40,7 +40,7 @@ with st.sidebar:
         st.rerun()
 
 # --- 4. ANA EKRAN MANTIĞI VE SEKMELER (TABS) ---
-st.title(f" Kr AI ({app_mode})")
+st.title(f" Kr AI Pro ")
 
 # Arayüzü daha profesyonel göstermek için sekmelere ayırıyoruz
 tab_main, tab_stats = st.tabs(["⚡ Ana İşlem Merkezi", "📊 Sistem İstatistikleri"])
