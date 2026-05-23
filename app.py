@@ -11,7 +11,7 @@ except Exception:
     st.stop()
 
 # Sayfa Genişlik Ayarları
-st.set_page_config(page_title="Kr AI Pro v4.2", page_icon="file:///Users/bahar/Downloads/Gemini_Generated_Image_itum73itum73itum.png", layout="centered")
+st.set_page_config(page_title="Kr AI Pro v4.2", page_icon="", layout="centered")
 
 # --- 2. HAFIZA SİSTEMİ ---
 if "messages" not in st.session_state:
