@@ -19,7 +19,7 @@ if "messages" not in st.session_state:
 
 # --- 3. YAN MENÜ (KONTROL PANELİ) ---
 with st.sidebar:
-    st.image("file:///Users/bahar/Downloads/Gemini_Generated_Image_itum73itum73itum.png", width=60)
+    st.image("", width=60)
     st.title(" Kr AI Kontrol")
     
     st.divider()
