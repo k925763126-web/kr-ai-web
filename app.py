@@ -3,58 +3,103 @@ from groq import Groq
 
 # --- 1. GÜVENLİK VE API BAĞLANTI KONTROLÜ ---
 try:
-    # Anahtarın Streamlit Secrets (Kasa) kısmında GROQ_API_KEY olarak kayıtlı olmalı
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
     client = Groq(api_key=GROQ_API_KEY)
 except Exception:
     st.error("🔑 API Key Bulunamadı! Lütfen Streamlit Cloud Settings -> Secrets kısmına GROQ_API_KEY ekleyin.")
     st.stop()
 
-# Sayfa Genişlik Ayarları
-st.set_page_config(page_title="Kr AI Pro v4.6", page_icon="👑", layout="wide")
+# Sayfa Ayarları
+st.set_page_config(page_title="Kr AI Pro", page_icon="", layout="wide")
 
-# --- 2. HAFIZA SİSTEMİ ---
+# --- 2. PREMIUM CSS DOKUNUŞLARI ---
+st.markdown("""
+    <style>
+    [data-testid="stSidebar"] {
+        background-color: #11141a;
+        border-right: 1px solid #2d3139;
+    }
+    .stButton>button {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid #3e4451;
+        background-color: #1e222b;
+        color: #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        border-color: #ff4b4b;
+        background-color: #ff4b4b;
+        color: white;
+        box-shadow: 0px 4px 15px rgba(255, 75, 75, 0.3);
+    }
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #1e222b;
+        border-radius: 8px 8px 0px 0px;
+        padding: 10px 20px;
+        color: #94a3b8;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #ff4b4b !important;
+        color: white !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- 3. DİNAMİK HAFIZA SİSTEMİ (SOHBET VE RESİM İÇİN) ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "generated_image" not in st.session_state:
+    st.session_state.generated_image = None
+if "image_caption" not in st.session_state:
+    st.session_state.image_caption = ""
 
-# --- 3. YAN MENÜ (KONTROL PANELİ) ---
+# --- 4. YAN MENÜ (YENİ NESİL MODERNEŞTİRİLMİŞ PANEL) ---
 with st.sidebar:
-    st.markdown("## 👑 PLATINUM CONTROL")
-    st.write("Kr AI Yönetim Paneli")
+    st.markdown("<h1 style='text-align: center; color: #ff4b4b;'>👑 Kr AI Pro</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 13px;'>Sürüm: Platinum v4.9<br>7/24 Kesintisiz Bulut Sistemi</p>", unsafe_allow_html=True)
     
     st.divider()
     
-    # MOD SEÇİMİ
-    app_mode = st.radio("🎯 İşlem Modu Seçin:", ["Normal Sohbet", "Resim Oluşturucu"])
+    st.markdown("### 🎯 Çalışma Modu")
+    app_mode = st.selectbox(
+        "Uygulama işlevini değiştirin:",
+        ["💬 Normal Sohbet", "🎨 Resim Oluşturucu"],
+        label_visibility="collapsed"
+    )
     
-    # RESİM MODU AYARLARI
-    if app_mode == "Resim Oluşturucu":
-        st.divider()
-        art_style = st.selectbox("🎭 Sanat Stili", ["Foto-Gerçekçi", "Siberpunk", "Yağlı Boya", "Anime", "3D Render"])
+    if "🎨 Resim" in app_mode:
+        st.markdown("---")
+        st.markdown("### 🎭 Görsel Stil")
+        art_style = st.selectbox(
+            "Yapay zeka çizim tarzı:",
+            ["Foto-Gerçekçi", "Siberpunk", "Yağlı Boya", "Anime", "3D Render"],
+            label_visibility="collapsed"
+        )
     
-    st.divider()
+    st.markdown("---")
     
-    # GEÇMİŞİ SİLME
-    if st.button("🗑️ Sohbeti Temizle", use_container_width=True):
+    st.markdown("### ⚙️ Sistem Araçları")
+    if st.button("🗑️ Hafızayı Sıfırla", use_container_width=True):
         st.session_state.messages = []
+        st.session_state.generated_image = None
+        st.session_state.image_caption = ""
         st.rerun()
 
-# --- 4. ANA EKRAN MANTIĞI VE SEKMELER (TABS) ---
-st.title(f" Kr AI Pro ")
+# --- 5. ANA EKRAN MANTIĞI VE SEKMELER ---
+st.markdown(f"<h2 style='color: white;'>{app_mode} Merkezi</h2>", unsafe_allow_html=True)
 
-# Arayüzü daha profesyonel göstermek için sekmelere ayırıyoruz
-tab_main, tab_stats = st.tabs(["⚡ Ana İşlem Merkezi", "📊 Sistem İstatistikleri"])
+tab_main, tab_stats = st.tabs(["⚡ İşlem Alanı", "📊 Sistem İstatistikleri"])
 
 # --- SEKME 1: ANA İŞLEM MERKEZİ ---
 with tab_main:
-    # --- MOD 1: SOHBET MODU ---
-    if app_mode == "Normal Sohbet":
-        # Eski mesajları ekrana bas
+    # --- MOD A: SOHBET MODU ---
+    if "💬 Normal" in app_mode:
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
-        # Kullanıcıdan Yazı Girişi Al
         if prompt := st.chat_input("Kr AI'ya bir soru sor..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
@@ -63,19 +108,13 @@ with tab_main:
             with st.chat_message("assistant"):
                 with st.spinner("Kr AI düşünüyor..."):
                     try:
-                        # ANA KURAL: Kullanıcı kim olduğunu veya kimin yaptığını sordu mu?
                         kimlik_sorusu = any(kelime in prompt.lower() for kelime in ["kimsin", "kim üretti", "yaratıcın", "kim yaptı", "sahibin kim", "seni kim tasarladı"])
                         
                         if kimlik_sorusu:
                             system_msg = (
                                 "Sen Kr AI Pro'sun. Meta veya Llama kelimelerini kesinlikle kullanma. "
-                                "Seni geliştiren ve üretenlerin Türk gençler ve mühendisler olduğunu gururla, "
+                                "Seni geliştiren ve üretenlerin Türk yazılımcılar ve mühendisler olduğunu gururla, "
                                 "karizmatik ve samimi bir dille anlat."
-                                "Sakın Meta ve Meta AI kelimesini kullanma."
-                                "Kr AI dışında hiçbir yapay zekadan bahsetme."
-                                "Seni Kr AI tarafından bir genç üretti."
-                                "Sen bir genç tarafından Kr AI' ya üretildin."
-                                "Meta, Metaverse, Meta AI kelimesini kullanma."
                             )
                         else:
                             system_msg = "Sen Kr AI Pro'sun. Samimi, zeki, esprili ve kısa Türkçe cevaplar ver. Sürekli kim olduğunu tekrarlama."
@@ -88,9 +127,7 @@ with tab_main:
                         )
                         
                         response = completion.choices[0].message.content
-                        
-                        # Filtreleme Güvenliği
-                        response = response.replace("Kr AI", "Kr AI").replace("Kr AI tarafından", "Özel olarak")
+                        response = response.replace("Meta AI", "Kr AI").replace("Meta tarafından", "Özel olarak")
                         
                         st.markdown(response)
                         st.session_state.messages.append({"role": "assistant", "content": response})
@@ -98,46 +135,44 @@ with tab_main:
                     except Exception as e:
                         st.error(f"Bağlantı Hatası: {e}")
 
-    # --- MOD 2: RESİM OLUŞTURUCU MODU ---
-    elif app_mode == "Resim Oluşturucu":
-        st.subheader("🎨 Hayalindekini Gerçeğe Dönüştür")
-        img_prompt = st.text_area("Resim açıklamasını Türkçe veya İngilizce yazın:", placeholder="Örn: Geleceğin uçan arabaları, İstanbul Boğazı...")
+    # --- MOD B: RESİM OLUŞTURUCU MODU ---
+    elif "🎨 Resim" in app_mode:
+        st.write("Hayalindeki sahneyi betimle, Kr AI saniyeler içinde çizsin.")
+        img_prompt = st.text_area("Resim açıklaması:", placeholder="Örn: Geleceğin uçan arabaları, İstanbul Boğazı...", label_visibility="collapsed")
         
         if st.button("✨ Resmi Çiz", use_container_width=True):
             if img_prompt:
                 with st.spinner("Kr AI fırçasını hazırlıyor, lütfen bekleyin..."):
-                    # Seçilen stili promptun sonuna ekleyip zenginleştiriyoruz
+                    # Her basışta resmi yenilemek için zaman damgası (timestamp) yerine dinamik kelime yapısı kuruyoruz
+                    import random
+                    seed = random.randint(1, 999999)
+                    
                     enhanced_prompt = f"{img_prompt}, in {art_style} style, high quality, 8k, detailed, masterpiece"
                     encoded_art = enhanced_prompt.replace(" ", "%20")
                     
-                    img_url = f"https://image.pollinations.ai/prompt/{encoded_art}?nologo=true"
+                    # URL'ye seed ekleyerek tarayıcının resmi hafızada (cache) tutmasını engelliyoruz
+                    img_url = f"https://image.pollinations.ai/prompt/{encoded_art}?seed={seed}&nologo=true"
                     
-                    # Resmi ekranda göster
-                    st.image(img_url, caption=f"Stil: {art_style} | Kr AI Tasarımı", use_container_width=True)
+                    # Hafızaya kaydet
+                    st.session_state.generated_image = img_url
+                    st.session_state.image_caption = f"Stil: {art_style} | Kr AI Tasarımı"
                     st.balloons()
             else:
                 st.warning("Lütfen önce resmini çizmek istediğiniz bir şeyler yazın!")
+        
+        # Eğer hafızada üretilmiş bir resim varsa ekranda sabit tut ve göster
+        if st.session_state.generated_image:
+            st.image(st.session_state.generated_image, caption=st.session_state.image_caption, use_container_width=True)
 
 # --- SEKME 2: İSTATİSTİKLER ---
 with tab_stats:
-    st.subheader("📈 Kr AI Gerçek Zamanlı Sistem Verileri")
-    
-    # 3 sütun halinde şık metrikler oluşturuyoruz
+    st.subheader("📈 Gerçek Zamanlı Sistem Verileri")
     col_a, col_b, col_c = st.columns(3)
-    
-    # Aktif mesaj sayısını hesaplama
     total_messages = len(st.session_state.messages)
     
-    col_a.metric(label="Aktif Yapay Zeka Modeli", value="Kr AI V4.6", delta="En Üst Sürüm")
+    col_a.metric(label="Aktif Yapay Zeka Modeli", value="Llama 3.3 (70B)", delta="En Üst Sürüm")
     col_b.metric(label="Mevcut Sohbet Hafızası", value=f"{total_messages} Mesaj", delta="Bellek Durumu")
     col_c.metric(label="Bulut Sunucu Bağlantısı", value="Çevrimiçi (7/24)", delta="Aktif")
     
     st.divider()
-    
-    # Bilgilendirme kutusu
-    st.info(
-        "💡 **Sistem Notu:** Bu uygulama GitHub ve Streamlit Cloud entegrasyonu ile "
-        "kesintisiz bulut sunucularında barındırılmaktadır. " 
-        " Bu uygulama linkine tıklayan herkes 7/24 bu panel üzerinden Kr AI'ya erişebilir."
-        "Bu uygulama beta versiyondur ve Kr AI hata yapabilir. "
-    )
+    st.info("💡 **Sistem Notu:** Bu uygulama kesintisiz bulut sunucularında barındırılmaktadır. Bilgisayarınız kapansa bile çalışır.")
