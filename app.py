@@ -1,5 +1,6 @@
 import streamlit as st
 from groq import Groq
+import time
 
 # --- 1. GÜVENLİK VE API BAĞLANTI KONTROLÜ ---
 try:
@@ -10,7 +11,7 @@ except Exception:
     st.stop()
 
 # Sayfa Ayarları
-st.set_page_config(page_title="Kr AI Pro", page_icon="", layout="wide")
+st.set_page_config(page_title="Kr AI Pro v5.0", page_icon="", layout="wide")
 
 # --- 2. PREMIUM CSS DOKUNUŞLARI ---
 st.markdown("""
@@ -47,7 +48,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. DİNAMİK HAFIZA SİSTEMİ (SOHBET VE RESİM İÇİN) ---
+# --- 3. DİNAMİK HAFIZA SİSTEMİ ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "generated_image" not in st.session_state:
@@ -55,10 +56,10 @@ if "generated_image" not in st.session_state:
 if "image_caption" not in st.session_state:
     st.session_state.image_caption = ""
 
-# --- 4. YAN MENÜ (YENİ NESİL MODERNEŞTİRİLMİŞ PANEL) ---
+# --- 4. YAN MENÜ (YENİ NESİL KONTROL PANELİ) ---
 with st.sidebar:
     st.markdown("<h1 style='text-align: center; color: #ff4b4b;'>👑 Kr AI Pro</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 13px;'>Sürüm: Platinum v4.9<br>7/24 Kesintisiz Bulut Sistemi</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 13px;'>Sürüm: Platinum v5.0<br>7/24 Kesintisiz Bulut Sistemi</p>", unsafe_allow_html=True)
     
     st.divider()
     
@@ -143,24 +144,23 @@ with tab_main:
         if st.button("✨ Resmi Çiz", use_container_width=True):
             if img_prompt:
                 with st.spinner("Kr AI fırçasını hazırlıyor, lütfen bekleyin..."):
-                    # Her basışta resmi yenilemek için zaman damgası (timestamp) yerine dinamik kelime yapısı kuruyoruz
-                    import random
-                    seed = random.randint(1, 999999)
+                    # KİLİT ÇÖZÜCÜ: Her saniye değişen benzersiz bir sayı üretiyoruz (Timestamp)
+                    timestamp = int(time.time())
                     
                     enhanced_prompt = f"{img_prompt}, in {art_style} style, high quality, 8k, detailed, masterpiece"
                     encoded_art = enhanced_prompt.replace(" ", "%20")
                     
-                    # URL'ye seed ekleyerek tarayıcının resmi hafızada (cache) tutmasını engelliyoruz
-                    img_url = f"https://image.pollinations.ai/prompt/{encoded_art}?seed={seed}&nologo=true"
+                    # URL sonuna eklenen timestamp sayesinde tarayıcı her seferinde zorunlu olarak yeni resim çizer
+                    img_url = f"https://image.pollinations.ai/prompt/{encoded_art}?seed={timestamp}&nologo=true"
                     
-                    # Hafızaya kaydet
+                    # Yeni resmi hafızaya yazıyoruz
                     st.session_state.generated_image = img_url
-                    st.session_state.image_caption = f"Stil: {art_style} | Kr AI Tasarımı"
-                    st.balloons()
+                    st.session_state.image_caption = f"Stil: {art_style} | Kr AI Tasarımı | Kod: {timestamp}"
+                    st.rerun() # Sayfayı zorla yenileyerek resmi ekrana basıyoruz
             else:
                 st.warning("Lütfen önce resmini çizmek istediğiniz bir şeyler yazın!")
         
-        # Eğer hafızada üretilmiş bir resim varsa ekranda sabit tut ve göster
+        # Hafızada kayıtlı bir resim varsa ekranda göster
         if st.session_state.generated_image:
             st.image(st.session_state.generated_image, caption=st.session_state.image_caption, use_container_width=True)
 
@@ -170,9 +170,9 @@ with tab_stats:
     col_a, col_b, col_c = st.columns(3)
     total_messages = len(st.session_state.messages)
     
-    col_a.metric(label="Aktif Yapay Zeka Modeli", value="Kr AI Pro v4.9", delta="En Üst Sürüm")
+    col_a.metric(label="Aktif Yapay Zeka Modeli", value="Kr AI V5.0", delta="En Üst Sürüm")
     col_b.metric(label="Mevcut Sohbet Hafızası", value=f"{total_messages} Mesaj", delta="Bellek Durumu")
     col_c.metric(label="Bulut Sunucu Bağlantısı", value="Çevrimiçi (7/24)", delta="Aktif")
     
     st.divider()
-    st.info("💡 **Sistem Notu:** Bu uygulama kesintisiz bulut sunucularında barındırılmaktadır. Bilgisayarınız kapansa bile çalışır.")
+    st.info("💡 **Sistem Notu:** Bu uygulama kesintisiz bulut sunucularında barındırılmaktadır. Kr AI hata yapabilir.")
