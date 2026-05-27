@@ -170,7 +170,7 @@ with tab_stats:
     col_a, col_b, col_c = st.columns(3)
     total_messages = len(st.session_state.messages)
     
-    col_a.metric(label="Aktif Yapay Zeka Modeli", value="Llama 3.3 (70B)", delta="En Üst Sürüm")
+    col_a.metric(label="Aktif Yapay Zeka Modeli", value="Kr AI Pro v4.9", delta="En Üst Sürüm")
     col_b.metric(label="Mevcut Sohbet Hafızası", value=f"{total_messages} Mesaj", delta="Bellek Durumu")
     col_c.metric(label="Bulut Sunucu Bağlantısı", value="Çevrimiçi (7/24)", delta="Aktif")
     
