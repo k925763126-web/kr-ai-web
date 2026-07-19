@@ -7,7 +7,7 @@ try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
     client = Groq(api_key=GROQ_API_KEY)
 except Exception:
-    st.error("🔑 API Key Bulunamadı! Lütfen Streamlit Cloud Settings -> Secrets kısmına GROQ_API_KEY ekleyin.")
+    st.error("Sunucu Bakımı Yapılmaktadır. Lütfen Bekleyiniz!")
     st.stop()
 
 # Sayfa Ayarları
@@ -175,4 +175,4 @@ with tab_stats:
     col_c.metric(label="Bulut Sunucu Bağlantısı", value="Çevrimiçi (7/24)", delta="Aktif")
     
     st.divider()
-    st.info("💡 **Sistem Notu:** Bu uygulama kesintisiz bulut sunucularında barındırılmaktadır. Kr AI hata yapabilir.")
+    st.info("💡 **Sistem Notu:** Bu uygulama geilştirme aşamasındadır. Kr AI hata yapabilir.")
