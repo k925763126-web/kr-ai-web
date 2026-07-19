@@ -175,4 +175,4 @@ with tab_stats:
     col_c.metric(label="Bulut Sunucu Bağlantısı", value="Çevrimiçi (7/24)", delta="Aktif")
     
     st.divider()
-    st.info("💡 **Sistem Notu:** Bu uygulama geilştirme aşamasındadır. Kr AI hata yapabilir.")
+    st.info("💡 **Sistem Notu:** Bu uygulama geliştirme aşamasındadır. Kr AI hata yapabilir.")
