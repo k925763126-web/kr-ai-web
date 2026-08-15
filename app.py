@@ -33,7 +33,7 @@ if "generated_image" not in st.session_state:
 # --- 4. YAN MENÜ ---
 with st.sidebar:
     st.markdown("<h1 style='text-align: center; color: #ff4b4b;'>👑 Kr AI Pro</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 12px;'>Altyapı: Groq Cloud v9.0</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 12px;'>Altyapı: Kr Cloud v9.0</p>", unsafe_allow_html=True)
     
     app_mode = st.selectbox("İşlem Modu:", ["💬 Mühendislik Sohbeti", "🎨 Gelişmiş Görsel"])
     
@@ -91,5 +91,5 @@ with tab1:
             st.image(st.session_state.generated_image, use_container_width=True)
 
 with tab2:
-    st.metric("Model Altyapısı", "GPT OSS 120B", "Güncel & Aktif")
-    st.info("Kr AI v9.0: Groq sistem güncellemelerine tamamen uyumlu hale getirildi.")
+    st.metric("Model Altyapısı", "Kr OS 120B", "Güncel & Aktif")
+    st.info("Kr AI v9.0: Kr OS sistem güncellemelerine tamamen uyumlu hale getirildi.")
