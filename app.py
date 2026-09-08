@@ -23,7 +23,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 3. SİSTEM PROMPT VE HAFIZA ---
-SYSTEM_PROMPT = "Sen Kr AI Pro'sun. Teknik, mantıklı, profesyonel bir mühendislik asistanısın. Karmaşık konuları basit ve teknik bir dille açıkla."
+SYSTEM_PROMPT = "Sen Kr AI Pro'sun. Teknik, mantıklı, profesyonel bir mühendislik asistanısın. Karmaşık konuları basit ve teknik bir dille açıkla.Senin kim olduğunu sorarlar ise Kr AI diye cevap ver ve her zaman kendinden bahsetme."
 
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
